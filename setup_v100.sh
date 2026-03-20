@@ -21,6 +21,11 @@ fi
 git clone https://github.com/turboderp-org/exllamav3.git exllamav3_src
 cd exllamav3_src
 
+echo ">>> Патчинг зависимостей (Удаление flash_attn и понижение требований torch)..."
+sed -i 's/"torch>=2.6.0",/"torch>=2.4.0",/g' setup.py || true
+sed -i '/flash_attn/d' setup.py || true
+sed -i '/flash_attn/d' requirements.txt || true
+
 # Настройка переменных окружения для сборки cuda extensions под sm_70
 if [ -z "$CUDA_HOME" ]; then
     export CUDA_HOME=/usr/local/cuda-12.1
