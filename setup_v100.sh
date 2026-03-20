@@ -26,6 +26,9 @@ sed -i 's/"torch>=2.6.0",/"torch>=2.4.0",/g' setup.py || true
 sed -i '/flash_attn/d' setup.py || true
 sed -i '/flash_attn/d' requirements.txt || true
 
+echo ">>> Патчинг компилятора (Разрешение bfloat16/half конвертаций на sm_70)..."
+sed -i 's/"-lineinfo", "-O3"/"-lineinfo", "-O3", "-U__CUDA_NO_BFLOAT16_CONVERSIONS__", "-U__CUDA_NO_HALF_CONVERSIONS__", "-U__CUDA_NO_HALF_OPERATORS__", "-U__CUDA_NO_HALF2_OPERATORS__"/g' setup.py || true
+
 # Настройка переменных окружения для сборки cuda extensions под sm_70
 if [ -z "$CUDA_HOME" ]; then
     export CUDA_HOME=/usr/local/cuda-12.1
