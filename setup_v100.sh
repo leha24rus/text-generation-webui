@@ -47,7 +47,7 @@ export TORCH_CUDA_ARCH_LIST="7.0"
 export MAX_JOBS=$(nproc)
 
 echo ">>> Запуск компиляции nvcc (потребует времени)..."
-pip install --no-cache-dir .
+pip install --no-cache-dir --no-build-isolation .
 
 cd ..
 rm -rf exllamav3_src
