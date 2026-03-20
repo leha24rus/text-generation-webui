@@ -35,11 +35,18 @@ if [ -z "$CUDA_HOME" ]; then
 fi
 
 export PATH=$CUDA_HOME/bin:$PATH
+
+if [ -d "$CUDA_HOME/targets/x86_64-linux/include" ]; then
+    export CFLAGS="-I$CUDA_HOME/targets/x86_64-linux/include $CFLAGS"
+    export CXXFLAGS="-I$CUDA_HOME/targets/x86_64-linux/include $CXXFLAGS"
+    export CPATH="$CUDA_HOME/targets/x86_64-linux/include:$CPATH"
+fi
+
 export TORCH_CUDA_ARCH_LIST="7.0"
 export MAX_JOBS=$(nproc)
 
 echo ">>> Запуск компиляции nvcc (потребует времени)..."
-pip install .
+pip install --no-cache-dir .
 
 cd ..
 rm -rf exllamav3_src
