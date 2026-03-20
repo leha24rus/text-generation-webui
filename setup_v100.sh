@@ -2,6 +2,7 @@
 # setup_v100.sh
 
 set -e
+unset EXLLAMA_NOCOMPILE
 
 echo "=== Подготовка окружения Text-Generation-WebUI для Tesla V100 ==="
 
