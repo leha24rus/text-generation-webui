@@ -30,6 +30,21 @@ sed -i '/flash_attn/d' requirements.txt || true
 echo ">>> Патчинг компилятора (Разрешение bfloat16/half конвертаций на sm_70)..."
 sed -i 's/"-lineinfo", "-O3"/"-lineinfo", "-O3", "-U__CUDA_NO_BFLOAT16_CONVERSIONS__", "-U__CUDA_NO_HALF_CONVERSIONS__", "-U__CUDA_NO_HALF_OPERATORS__", "-U__CUDA_NO_HALF2_OPERATORS__"/g' setup.py || true
 
+echo ">>> Добавление полифилла bfloat162 для Volta..."
+cat << 'EOF' > patch_util.h
+#include <cuda_bf16.h>
+#if defined(__CUDA_ARCH__) && (__CUDA_ARCH__ < 800)
+__device__ __forceinline__ __nv_bfloat162 __halves2bfloat162(const __nv_bfloat16 a, const __nv_bfloat16 b) {
+    __nv_bfloat162 res;
+    res.x = a;
+    res.y = b;
+    return res;
+}
+#endif
+EOF
+cat exllamav3/exllamav3_ext/util.cuh >> patch_util.h
+mv patch_util.h exllamav3/exllamav3_ext/util.cuh
+
 # Настройка переменных окружения для сборки cuda extensions под sm_70
 if [ -z "$CUDA_HOME" ]; then
     export CUDA_HOME=/usr/local/cuda-12.1
